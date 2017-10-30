@@ -1,51 +1,52 @@
 const express = require('express');
+const request = require('request');
+
 const fs = require('fs');
 
 let app = express();
 
 app.get('/api', function(req, res) {
     let msg = req.query.msg;
-    let source = req.query.source;
-    let userid = req.querry.userid;
-    let email = req.querry.email;
-    let sdt = req.querry.sdt;
-    let sothich = req.querry.sothich;
+
 
     let phanhoi = {
         "messages": [
             {"text": ""}
         ]
     };
+    console.log(msg)
+    request.get({
+        url: msg
+    }, function(err, resp, body) {
+        if (!err && resp.statusCode === 200) { 
+            let m = body.match(/step1\?id\=([0-9]+)\"/);
+            if (m && m[1] != undefined) {
+                let url = "https://unica.vn/order/step1?id=" + m[1] + "&aff=18915&coupon=luan1996"
+                phanhoi.messages[0].text = url
+                res.end(JSON.stringify(phanhoi))
+                return
+            }
+        }
+
+        phanhoi.messages[0].text = "loi lay du lieu"
+        res.end(JSON.stringify(phanhoi))
     
-    let luudulieuuser = {
-	"root" : [
-		{"name" : ""},	
-		{"email " : ""},
-		{"sdt" : ""},
-		{"id" : ""}, 
-		{"sothich" : ""}
-		]
-	};
+    });
 	
-	luudulieuuser.root['id'] = userid;
-	luudulieuuser.root['email'] = email;
-	luudulieuuser.root['sdt'] = sdt;
-	luudulieuuser.root['sothich'] = sothich;
-	
-    if (msg == 'hello') {
-        phanhoi.messages[0].text = 'hi there';
-        res.end(JSON.stringify(phanhoi));
-        return;
-    }
+    // if (msg == 'hello') {
+    //     phanhoi.messages[0].text = 'hi there';
+    //     res.end(JSON.stringify(phanhoi));
+    //     return;
+    // }
 
-    if (msg == 'xxx') {
-        phanhoi.messages[0].text = 'ok';
-        res.end(JSON.stringify(phanhoi));
-        return;
-    }
+    // if (msg == 'xxx') {
+    //     phanhoi.messages[0].text = 'ok';
+    //     res.end(JSON.stringify(phanhoi));
+    //     return;
+    // }
 
-    phanhoi.messages[0].text = 'xam';
-    res.end(JSON.stringify(phanhoi));
+    // phanhoi.messages[0].text = 'xam';
+    // res.end(JSON.stringify(phanhoi));
 });
 
 
